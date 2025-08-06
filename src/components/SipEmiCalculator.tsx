@@ -272,16 +272,41 @@ const SipEmiCalculator = () => {
 
                         <Separator />
 
-                        {/* SWP Results */}
+                        {/* EMI Loan Details */}
                         <div className="space-y-3">
-                          <h3 className="font-semibold text-accent">SWP Details</h3>
+                          <h3 className="font-semibold text-accent">EMI Loan Details</h3>
                           <div className="grid grid-cols-2 gap-4">
                             <div className="bg-background/60 p-3 rounded-lg">
-                              <p className="text-sm text-muted-foreground">Monthly SWP Amount</p>
+                              <p className="text-sm text-muted-foreground">Loan Amount</p>
+                              <p className="text-lg font-bold text-foreground">{formatCurrency(loanAmount)}</p>
+                            </div>
+                            <div className="bg-background/60 p-3 rounded-lg">
+                              <p className="text-sm text-muted-foreground">Interest Rate</p>
+                              <p className="text-lg font-bold text-foreground">{emiRate}% p.a.</p>
+                            </div>
+                            <div className="bg-background/60 p-3 rounded-lg">
+                              <p className="text-sm text-muted-foreground">EMI Tenure</p>
+                              <p className="text-lg font-bold text-foreground">{emiTenure} years</p>
+                            </div>
+                            <div className="bg-background/60 p-3 rounded-lg">
+                              <p className="text-sm text-muted-foreground">EMI Start Month</p>
+                              <p className="text-lg font-bold text-foreground">Month {emiStartMonth}</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <Separator />
+
+                        {/* SWP Results */}
+                        <div className="space-y-3">
+                          <h3 className="font-semibold text-destructive">SWP EMI Payments</h3>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="bg-background/60 p-3 rounded-lg">
+                              <p className="text-sm text-muted-foreground">Monthly EMI via SWP</p>
                               <p className="text-lg font-bold text-destructive">{formatCurrency(result.emiMonthly)}</p>
                             </div>
                             <div className="bg-background/60 p-3 rounded-lg">
-                              <p className="text-sm text-muted-foreground">Total SWP Withdrawn</p>
+                              <p className="text-sm text-muted-foreground">Total EMI Paid via SWP</p>
                               <p className="text-lg font-bold text-destructive">{formatCurrency(result.totalSWPWithdrawn)}</p>
                             </div>
                           </div>
@@ -343,7 +368,7 @@ const SipEmiCalculator = () => {
                         <TableHead className="sticky top-0 bg-background">Period</TableHead>
                         <TableHead className="sticky top-0 bg-background text-right">SIP Investment</TableHead>
                         <TableHead className="sticky top-0 bg-background text-right">Corpus (Before SWP)</TableHead>
-                        <TableHead className="sticky top-0 bg-background text-right">SWP Withdrawal</TableHead>
+                        <TableHead className="sticky top-0 bg-background text-right">EMI via SWP</TableHead>
                         <TableHead className="sticky top-0 bg-background text-right">Net Corpus</TableHead>
                       </TableRow>
                     </TableHeader>
