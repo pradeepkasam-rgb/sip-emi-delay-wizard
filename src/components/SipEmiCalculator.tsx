@@ -29,6 +29,8 @@ const SipEmiCalculator = () => {
   const [sipAmount, setSipAmount] = useState<number>(5000);
   const [sipTenure, setSipTenure] = useState<number>(10);
   const [sipReturn, setSipReturn] = useState<number>(12);
+  const [topupPercentage, setTopupPercentage] = useState<number>(10);
+  const [topupMonth, setTopupMonth] = useState<number>(4); // April (1-based)
   const [loanAmount, setLoanAmount] = useState<number>(500000);
   const [emiRate, setEmiRate] = useState<number>(8.5);
   const [emiTenure, setEmiTenure] = useState<number>(6);
@@ -49,14 +51,25 @@ const SipEmiCalculator = () => {
     
     let currentCorpus = 0;
     let totalSWPWithdrawn = 0;
+    let totalSipInvestment = 0;
     const monthlyData: MonthlyData[] = [];
+    let currentSipAmount = sipAmount;
 
     for (let month = 1; month <= totalMonths; month++) {
       // Apply returns to existing corpus
       currentCorpus = currentCorpus * (1 + monthlyReturnRate);
       
+      const year = Math.ceil(month / 12);
+      const monthInYear = ((month - 1) % 12) + 1;
+      
+      // Check for SIP top-up (increase SIP amount in the specified month each year, starting from year 2)
+      if (monthInYear === topupMonth && year > 1 && month === ((year - 1) * 12) + topupMonth) {
+        currentSipAmount = currentSipAmount * (1 + topupPercentage / 100);
+      }
+      
       // Add monthly SIP
-      currentCorpus += sipAmount;
+      currentCorpus += currentSipAmount;
+      totalSipInvestment += currentSipAmount;
       
       const corpusBeforeSWP = currentCorpus;
       let swpWithdrawal = 0;
@@ -68,24 +81,20 @@ const SipEmiCalculator = () => {
         totalSWPWithdrawn += swpWithdrawal;
       }
       
-      const year = Math.ceil(month / 12);
-      const monthInYear = ((month - 1) % 12) + 1;
-      
       monthlyData.push({
         month: monthInYear,
         year,
-        sipInvestment: sipAmount,
+        sipInvestment: currentSipAmount,
         corpusBeforeSWP,
         swpWithdrawal,
         netCorpus: currentCorpus
       });
     }
 
-    const sipInvestment = sipAmount * totalMonths;
-    const totalReturns = currentCorpus + totalSWPWithdrawn - sipInvestment;
+    const totalReturns = currentCorpus + totalSWPWithdrawn - totalSipInvestment;
     
     setResult({
-      sipInvestment,
+      sipInvestment: totalSipInvestment,
       totalSWPWithdrawn,
       finalCorpus: currentCorpus,
       totalReturns,
@@ -96,7 +105,7 @@ const SipEmiCalculator = () => {
 
   useEffect(() => {
     performCalculation();
-  }, [sipAmount, sipTenure, sipReturn, loanAmount, emiRate, emiTenure, emiStartMonth]);
+  }, [sipAmount, sipTenure, sipReturn, topupPercentage, topupMonth, loanAmount, emiRate, emiTenure, emiStartMonth]);
 
   const formatCurrency = (amount: number): string => {
     return new Intl.NumberFormat('en-IN', {
@@ -182,6 +191,41 @@ const SipEmiCalculator = () => {
                         onChange={(e) => setSipReturn(Number(e.target.value))}
                         className="text-lg font-semibold"
                       />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="topupPercentage">Annual SIP Top-up (%)</Label>
+                      <Input
+                        id="topupPercentage"
+                        type="number"
+                        step="0.1"
+                        value={topupPercentage}
+                        onChange={(e) => setTopupPercentage(Number(e.target.value))}
+                        className="text-lg font-semibold"
+                      />
+                      <p className="text-xs text-muted-foreground">Percentage increase in SIP amount each year</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="topupMonth">Top-up Month</Label>
+                      <select
+                        id="topupMonth"
+                        value={topupMonth}
+                        onChange={(e) => setTopupMonth(Number(e.target.value))}
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-lg font-semibold ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        <option value={1}>January</option>
+                        <option value={2}>February</option>
+                        <option value={3}>March</option>
+                        <option value={4}>April</option>
+                        <option value={5}>May</option>
+                        <option value={6}>June</option>
+                        <option value={7}>July</option>
+                        <option value={8}>August</option>
+                        <option value={9}>September</option>
+                        <option value={10}>October</option>
+                        <option value={11}>November</option>
+                        <option value={12}>December</option>
+                      </select>
+                      <p className="text-xs text-muted-foreground">Month when annual SIP increase happens</p>
                     </div>
                   </CardContent>
                 </Card>
