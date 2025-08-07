@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Slider } from '@/components/ui/slider';
 import { Calculator, TrendingUp, CreditCard, PiggyBank, Table as TableIcon, ArrowDownCircle } from 'lucide-react';
 
 interface MonthlyData {
@@ -153,29 +154,35 @@ const SipEmiCalculator = () => {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="calculator" className="space-y-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Input Cards */}
-              <div className="space-y-6">
-                {/* SIP Card */}
-                <Card className="shadow-lg border-0 bg-card/80 backdrop-blur-sm">
-                  <CardHeader className="pb-4">
-                    <CardTitle className="flex items-center gap-2 text-primary">
-                      <PiggyBank className="h-5 w-5" />
+          <TabsContent value="calculator" className="space-y-6">
+            {/* Compact Input Grid */}
+            <Card className="shadow-lg border-0 bg-card/80 backdrop-blur-sm">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2 text-primary">
+                  <Calculator className="h-5 w-5" />
+                  Investment & Loan Parameters
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {/* SIP Inputs */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-primary flex items-center gap-2">
+                      <PiggyBank className="h-4 w-4" />
                       SIP Investment
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
+                    </h3>
+                    
                     <div className="space-y-2">
-                      <Label htmlFor="sipAmount">Monthly SIP Amount (₹)</Label>
+                      <Label htmlFor="sipAmount">Monthly SIP (₹)</Label>
                       <Input
                         id="sipAmount"
                         type="number"
                         value={sipAmount}
                         onChange={(e) => setSipAmount(Number(e.target.value))}
-                        className="text-lg font-semibold"
+                        className="font-semibold"
                       />
                     </div>
+                    
                     <div className="space-y-2">
                       <Label htmlFor="sipTenure">Investment Period (Years)</Label>
                       <Input
@@ -183,39 +190,51 @@ const SipEmiCalculator = () => {
                         type="number"
                         value={sipTenure}
                         onChange={(e) => setSipTenure(Number(e.target.value))}
-                        className="text-lg font-semibold"
+                        className="font-semibold"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="sipReturn">Expected Annual Return (%)</Label>
-                      <Input
+                    
+                    <div className="space-y-3">
+                      <Label htmlFor="sipReturn">Expected Return: {sipReturn}%</Label>
+                      <Slider
                         id="sipReturn"
-                        type="number"
-                        step="0.1"
-                        value={sipReturn}
-                        onChange={(e) => setSipReturn(Number(e.target.value))}
-                        className="text-lg font-semibold"
+                        min={5}
+                        max={25}
+                        step={0.5}
+                        value={[sipReturn]}
+                        onValueChange={(value) => setSipReturn(value[0])}
+                        className="w-full"
                       />
+                      <div className="flex justify-between text-xs text-muted-foreground">
+                        <span>5%</span>
+                        <span>25%</span>
+                      </div>
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="topupPercentage">Annual SIP Top-up (%)</Label>
-                      <Input
+                    
+                    <div className="space-y-3">
+                      <Label htmlFor="topupPercentage">Annual Top-up: {topupPercentage}%</Label>
+                      <Slider
                         id="topupPercentage"
-                        type="number"
-                        step="0.1"
-                        value={topupPercentage}
-                        onChange={(e) => setTopupPercentage(Number(e.target.value))}
-                        className="text-lg font-semibold"
+                        min={0}
+                        max={25}
+                        step={1}
+                        value={[topupPercentage]}
+                        onValueChange={(value) => setTopupPercentage(value[0])}
+                        className="w-full"
                       />
-                      <p className="text-xs text-muted-foreground">Percentage increase in SIP amount each year</p>
+                      <div className="flex justify-between text-xs text-muted-foreground">
+                        <span>0%</span>
+                        <span>25%</span>
+                      </div>
                     </div>
+                    
                     <div className="space-y-2">
                       <Label htmlFor="topupMonth">Top-up Month</Label>
                       <select
                         id="topupMonth"
                         value={topupMonth}
                         onChange={(e) => setTopupMonth(Number(e.target.value))}
-                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-lg font-semibold ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         <option value={1}>January</option>
                         <option value={2}>February</option>
@@ -230,20 +249,55 @@ const SipEmiCalculator = () => {
                         <option value={11}>November</option>
                         <option value={12}>December</option>
                       </select>
-                      <p className="text-xs text-muted-foreground">Month when annual SIP increase happens</p>
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
 
-                {/* EMI Card */}
-                <Card className="shadow-lg border-0 bg-card/80 backdrop-blur-sm">
-                  <CardHeader className="pb-4">
-                    <CardTitle className="flex items-center gap-2 text-accent">
-                      <ArrowDownCircle className="h-5 w-5" />
-                      SWP EMI Details
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
+                  {/* Loan/EMI Inputs */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-accent flex items-center gap-2">
+                      <CreditCard className="h-4 w-4" />
+                      Loan Details
+                    </h3>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="loanAmount">Loan Amount (₹)</Label>
+                      <Input
+                        id="loanAmount"
+                        type="number"
+                        value={loanAmount}
+                        onChange={(e) => setLoanAmount(Number(e.target.value))}
+                        className="font-semibold"
+                      />
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <Label htmlFor="emiRate">Interest Rate: {emiRate}%</Label>
+                      <Slider
+                        id="emiRate"
+                        min={5}
+                        max={20}
+                        step={0.25}
+                        value={[emiRate]}
+                        onValueChange={(value) => setEmiRate(value[0])}
+                        className="w-full"
+                      />
+                      <div className="flex justify-between text-xs text-muted-foreground">
+                        <span>5%</span>
+                        <span>20%</span>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="emiTenure">Loan Tenure (Years)</Label>
+                      <Input
+                        id="emiTenure"
+                        type="number"
+                        value={emiTenure}
+                        onChange={(e) => setEmiTenure(Number(e.target.value))}
+                        className="font-semibold"
+                      />
+                    </div>
+                    
                     <div className="space-y-2">
                       <Label htmlFor="emiStartMonth">EMI Start Month</Label>
                       <Input
@@ -253,152 +307,73 @@ const SipEmiCalculator = () => {
                         max={sipTenure * 12}
                         value={emiStartMonth}
                         onChange={(e) => setEmiStartMonth(Number(e.target.value))}
-                        className="text-lg font-semibold"
+                        className="font-semibold"
                       />
-                      <p className="text-xs text-muted-foreground">Month number when EMI starts (1 = first month)</p>
+                      <p className="text-xs text-muted-foreground">Month when EMI starts</p>
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="loanAmount">Loan Amount (₹)</Label>
-                      <Input
-                        id="loanAmount"
-                        type="number"
-                        value={loanAmount}
-                        onChange={(e) => setLoanAmount(Number(e.target.value))}
-                        className="text-lg font-semibold"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="emiRate">Interest Rate (% per annum)</Label>
-                      <Input
-                        id="emiRate"
-                        type="number"
-                        step="0.1"
-                        value={emiRate}
-                        onChange={(e) => setEmiRate(Number(e.target.value))}
-                        className="text-lg font-semibold"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="emiTenure">Loan Tenure (Years)</Label>
-                      <Input
-                        id="emiTenure"
-                        type="number"
-                        value={emiTenure}
-                        onChange={(e) => setEmiTenure(Number(e.target.value))}
-                        className="text-lg font-semibold"
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
+                  </div>
 
-              {/* Results Card */}
-              <div className="space-y-6">
-                <Card className="shadow-xl border-0 bg-gradient-to-br from-primary/5 to-accent/5 backdrop-blur-sm">
-                  <CardHeader className="pb-4">
-                    <CardTitle className="flex items-center gap-2 text-primary">
-                      <TrendingUp className="h-5 w-5" />
-                      Calculation Results
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
+                  {/* Results Section */}
+                  <div className="space-y-4">
+                    <h3 className="font-semibold text-primary flex items-center gap-2">
+                      <TrendingUp className="h-4 w-4" />
+                      Results
+                    </h3>
+                    
                     {result && (
-                      <>
-                        {/* SIP Results */}
-                        <div className="space-y-3">
-                          <h3 className="font-semibold text-primary">Investment Overview</h3>
-                          <div className="grid grid-cols-2 gap-4">
-                            <div className="bg-background/60 p-3 rounded-lg">
-                              <p className="text-sm text-muted-foreground">Total Investment</p>
-                              <p className="text-lg font-bold text-foreground">{formatCurrency(result.sipInvestment)}</p>
-                            </div>
-                            <div className="bg-background/60 p-3 rounded-lg">
-                              <p className="text-sm text-muted-foreground">Total Returns</p>
-                              <p className="text-lg font-bold text-accent">{formatCurrency(result.totalReturns)}</p>
-                            </div>
-                          </div>
+                      <div className="space-y-3">
+                        <div className="bg-background/60 p-3 rounded-lg">
+                          <p className="text-sm text-muted-foreground">Total Investment</p>
+                          <p className="text-lg font-bold text-foreground">{formatCurrency(result.sipInvestment)}</p>
                         </div>
-
-                        <Separator />
-
-                        {/* EMI Loan Details */}
-                        <div className="space-y-3">
-                          <h3 className="font-semibold text-accent">EMI Loan Details</h3>
-                          <div className="grid grid-cols-2 gap-4">
-                            <div className="bg-background/60 p-3 rounded-lg">
-                              <p className="text-sm text-muted-foreground">Loan Amount</p>
-                              <p className="text-lg font-bold text-foreground">{formatCurrency(loanAmount)}</p>
-                            </div>
-                            <div className="bg-background/60 p-3 rounded-lg">
-                              <p className="text-sm text-muted-foreground">Interest Rate</p>
-                              <p className="text-lg font-bold text-foreground">{emiRate}% p.a.</p>
-                            </div>
-                            <div className="bg-background/60 p-3 rounded-lg">
-                              <p className="text-sm text-muted-foreground">EMI Tenure</p>
-                              <p className="text-lg font-bold text-foreground">{emiTenure} years</p>
-                            </div>
-                            <div className="bg-background/60 p-3 rounded-lg">
-                              <p className="text-sm text-muted-foreground">EMI Start Month</p>
-                              <p className="text-lg font-bold text-foreground">Month {emiStartMonth}</p>
-                            </div>
-                          </div>
+                        
+                        <div className="bg-background/60 p-3 rounded-lg">
+                          <p className="text-sm text-muted-foreground">Monthly EMI via SWP</p>
+                          <p className="text-lg font-bold text-destructive">{formatCurrency(result.emiMonthly)}</p>
                         </div>
-
-                        <Separator />
-
-                        {/* SWP Results */}
-                        <div className="space-y-3">
-                          <h3 className="font-semibold text-destructive">SWP EMI Payments</h3>
-                          <div className="grid grid-cols-2 gap-4">
-                            <div className="bg-background/60 p-3 rounded-lg">
-                              <p className="text-sm text-muted-foreground">Monthly EMI via SWP</p>
-                              <p className="text-lg font-bold text-destructive">{formatCurrency(result.emiMonthly)}</p>
-                            </div>
-                            <div className="bg-background/60 p-3 rounded-lg">
-                              <p className="text-sm text-muted-foreground">Total EMI Paid via SWP</p>
-                              <p className="text-lg font-bold text-destructive">{formatCurrency(result.totalSWPWithdrawn)}</p>
-                            </div>
-                          </div>
+                        
+                        <div className="bg-background/60 p-3 rounded-lg">
+                          <p className="text-sm text-muted-foreground">Total EMI Paid</p>
+                          <p className="text-lg font-bold text-destructive">{formatCurrency(result.totalSWPWithdrawn)}</p>
                         </div>
-
-                        <Separator />
-
-                        {/* Final Results */}
-                        <div className="space-y-3">
-                          <h3 className="font-semibold text-success">Final Corpus</h3>
-                          <div className="bg-gradient-to-r from-success/10 to-success/5 p-4 rounded-lg border border-success/20">
-                            <p className="text-sm text-muted-foreground mb-1">Remaining Corpus After SWP</p>
-                            <p className="text-2xl font-bold text-success">{formatCurrency(result.finalCorpus)}</p>
-                          </div>
-                          
-                          <div className="bg-background/60 p-3 rounded-lg">
-                            <p className="text-sm text-muted-foreground">Effective Annual Return</p>
-                            <p className="text-lg font-bold text-primary">
-                              {((result.totalReturns / result.sipInvestment) * 100 / sipTenure).toFixed(2)}% p.a.
-                            </p>
-                          </div>
+                        
+                        <div className="bg-gradient-to-r from-success/10 to-success/5 p-3 rounded-lg border border-success/20">
+                          <p className="text-sm text-muted-foreground">Final Corpus</p>
+                          <p className="text-xl font-bold text-success">{formatCurrency(result.finalCorpus)}</p>
                         </div>
-                      </>
+                        
+                        <div className="bg-background/60 p-3 rounded-lg">
+                          <p className="text-sm text-muted-foreground">Total Returns</p>
+                          <p className="text-lg font-bold text-accent">{formatCurrency(result.totalReturns)}</p>
+                        </div>
+                        
+                        <div className="bg-background/60 p-3 rounded-lg">
+                          <p className="text-sm text-muted-foreground">Effective Annual Return</p>
+                          <p className="text-lg font-bold text-primary">
+                            {((result.totalReturns / result.sipInvestment) * 100 / sipTenure).toFixed(2)}% p.a.
+                          </p>
+                        </div>
+                      </div>
                     )}
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
-                {/* Info Card */}
-                <Card className="shadow-lg border-0 bg-muted/50">
-                  <CardContent className="pt-6">
-                    <div className="space-y-2">
-                      <h4 className="font-semibold text-foreground">How SWP EMI works:</h4>
-                      <ul className="text-sm text-muted-foreground space-y-1">
-                        <li>• SIP investments continue throughout the entire period</li>
-                        <li>• EMI is paid via SWP from your mutual fund corpus</li>
-                        <li>• You can choose when EMI payments start</li>
-                        <li>• Final corpus shows remaining amount after all SWP withdrawals</li>
-                      </ul>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
+            {/* Info Card */}
+            <Card className="shadow-lg border-0 bg-muted/50">
+              <CardContent className="pt-6">
+                <div className="space-y-2">
+                  <h4 className="font-semibold text-foreground">How SWP EMI works:</h4>
+                  <ul className="text-sm text-muted-foreground space-y-1">
+                    <li>• SIP investments continue throughout the entire period</li>
+                    <li>• EMI is paid via SWP from your mutual fund corpus</li>
+                    <li>• You can choose when EMI payments start</li>
+                    <li>• Final corpus shows remaining amount after all SWP withdrawals</li>
+                  </ul>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="breakdown" className="space-y-6">
