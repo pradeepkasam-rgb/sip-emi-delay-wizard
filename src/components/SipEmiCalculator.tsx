@@ -1,3 +1,24 @@
+/**
+ * SIP + SWP EMI Calculator V1.0
+ * 
+ * Features:
+ * - SIP with annual top-up functionality
+ * - EMI payments via SWP from mutual fund corpus
+ * - User-selectable EMI start month
+ * - Interactive sliders for percentage inputs
+ * - Comprehensive month-wise breakdown
+ * 
+ * V1.0 Baseline Defaults:
+ * - Monthly SIP: ₹5,000
+ * - Investment Period: 10 years
+ * - Expected Return: 12% p.a.
+ * - Annual Top-up: 10% (in April)
+ * - Loan Amount: ₹5,00,000
+ * - Interest Rate: 8.5% p.a.
+ * - Loan Tenure: 6 years
+ * - EMI Start Month: 25
+ */
+
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
