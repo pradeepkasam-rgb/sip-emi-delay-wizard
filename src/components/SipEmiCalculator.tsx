@@ -53,7 +53,14 @@ const SipEmiCalculator = () => {
   const [sipReturn, setSipReturn] = useState<number>(12);
   const [topupPercentage, setTopupPercentage] = useState<number>(10);
   const [topupMonth, setTopupMonth] = useState<number>(4); // April (1-based)
+  const [loanType, setLoanType] = useState<'single' | 'installment'>('single');
   const [loanAmount, setLoanAmount] = useState<number>(500000);
+  const [installment1Amount, setInstallment1Amount] = useState<number>(200000);
+  const [installment1Month, setInstallment1Month] = useState<number>(12);
+  const [installment2Amount, setInstallment2Amount] = useState<number>(200000);
+  const [installment2Month, setInstallment2Month] = useState<number>(18);
+  const [installment3Amount, setInstallment3Amount] = useState<number>(100000);
+  const [installment3Month, setInstallment3Month] = useState<number>(24);
   const [emiRate, setEmiRate] = useState<number>(8.5);
   const [emiTenure, setEmiTenure] = useState<number>(6);
   const [emiStartMonth, setEmiStartMonth] = useState<number>(25); // Month when EMI starts (1-based)
@@ -65,10 +72,30 @@ const SipEmiCalculator = () => {
     return (principal * monthlyRate * Math.pow(1 + monthlyRate, months)) / (Math.pow(1 + monthlyRate, months) - 1);
   };
 
+  const calculateTotalLoanWithInterest = (): number => {
+    if (loanType === 'single') {
+      return loanAmount;
+    }
+    
+    // Calculate simple interest for each installment until EMI starts
+    const monthsFromInstallment1 = Math.max(0, emiStartMonth - installment1Month);
+    const monthsFromInstallment2 = Math.max(0, emiStartMonth - installment2Month);
+    const monthsFromInstallment3 = Math.max(0, emiStartMonth - installment3Month);
+    
+    const simpleInterestRate = emiRate / (12 * 100); // Monthly simple interest rate
+    
+    const interest1 = installment1Amount * simpleInterestRate * monthsFromInstallment1;
+    const interest2 = installment2Amount * simpleInterestRate * monthsFromInstallment2;
+    const interest3 = installment3Amount * simpleInterestRate * monthsFromInstallment3;
+    
+    return installment1Amount + installment2Amount + installment3Amount + interest1 + interest2 + interest3;
+  };
+
   const performCalculation = () => {
     const monthlyReturnRate = sipReturn / (12 * 100);
     const sipTotalMonths = sipTenure * 12;
-    const emiMonthly = calculateEMI(loanAmount, emiRate, emiTenure);
+    const totalLoanAmount = calculateTotalLoanWithInterest();
+    const emiMonthly = calculateEMI(totalLoanAmount, emiRate, emiTenure);
     const emiEndMonth = emiStartMonth + (emiTenure * 12) - 1;
     const totalMonths = Math.max(sipTotalMonths, emiEndMonth);
     
@@ -132,7 +159,7 @@ const SipEmiCalculator = () => {
 
   useEffect(() => {
     performCalculation();
-  }, [sipAmount, sipTenure, sipReturn, topupPercentage, topupMonth, loanAmount, emiRate, emiTenure, emiStartMonth]);
+  }, [sipAmount, sipTenure, sipReturn, topupPercentage, topupMonth, loanType, loanAmount, installment1Amount, installment1Month, installment2Amount, installment2Month, installment3Amount, installment3Month, emiRate, emiTenure, emiStartMonth]);
 
   const formatCurrency = (amount: number): string => {
     return new Intl.NumberFormat('en-IN', {
@@ -281,15 +308,104 @@ const SipEmiCalculator = () => {
                     </h3>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="loanAmount">Loan Amount (₹)</Label>
-                      <Input
-                        id="loanAmount"
-                        type="number"
-                        value={loanAmount}
-                        onChange={(e) => setLoanAmount(Number(e.target.value))}
-                        className="font-semibold"
-                      />
+                      <Label htmlFor="loanType">Loan Type</Label>
+                      <select
+                        id="loanType"
+                        value={loanType}
+                        onChange={(e) => setLoanType(e.target.value as 'single' | 'installment')}
+                        className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        <option value="single">Single Loan</option>
+                        <option value="installment">3 Installments</option>
+                      </select>
                     </div>
+
+                    {loanType === 'single' ? (
+                      <div className="space-y-2">
+                        <Label htmlFor="loanAmount">Loan Amount (₹)</Label>
+                        <Input
+                          id="loanAmount"
+                          type="number"
+                          value={loanAmount}
+                          onChange={(e) => setLoanAmount(Number(e.target.value))}
+                          className="font-semibold"
+                        />
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <Label htmlFor="installment1Amount">Installment 1 (₹)</Label>
+                            <Input
+                              id="installment1Amount"
+                              type="number"
+                              value={installment1Amount}
+                              onChange={(e) => setInstallment1Amount(Number(e.target.value))}
+                              className="font-semibold"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="installment1Month">Month</Label>
+                            <Input
+                              id="installment1Month"
+                              type="number"
+                              min="1"
+                              value={installment1Month}
+                              onChange={(e) => setInstallment1Month(Number(e.target.value))}
+                              className="font-semibold"
+                            />
+                          </div>
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <Label htmlFor="installment2Amount">Installment 2 (₹)</Label>
+                            <Input
+                              id="installment2Amount"
+                              type="number"
+                              value={installment2Amount}
+                              onChange={(e) => setInstallment2Amount(Number(e.target.value))}
+                              className="font-semibold"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="installment2Month">Month</Label>
+                            <Input
+                              id="installment2Month"
+                              type="number"
+                              min="1"
+                              value={installment2Month}
+                              onChange={(e) => setInstallment2Month(Number(e.target.value))}
+                              className="font-semibold"
+                            />
+                          </div>
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <Label htmlFor="installment3Amount">Installment 3 (₹)</Label>
+                            <Input
+                              id="installment3Amount"
+                              type="number"
+                              value={installment3Amount}
+                              onChange={(e) => setInstallment3Amount(Number(e.target.value))}
+                              className="font-semibold"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="installment3Month">Month</Label>
+                            <Input
+                              id="installment3Month"
+                              type="number"
+                              min="1"
+                              value={installment3Month}
+                              onChange={(e) => setInstallment3Month(Number(e.target.value))}
+                              className="font-semibold"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
                     
                     <div className="space-y-3">
                       <Label htmlFor="emiRate">Interest Rate: {emiRate}%</Label>
@@ -332,6 +448,14 @@ const SipEmiCalculator = () => {
                       />
                       <p className="text-xs text-muted-foreground">Month when EMI starts</p>
                     </div>
+                    
+                    {loanType === 'installment' && (
+                      <div className="bg-background/60 p-3 rounded-lg border border-border">
+                        <p className="text-sm text-muted-foreground">Estimated Total Loan with Interest:</p>
+                        <p className="text-lg font-bold text-accent">{formatCurrency(calculateTotalLoanWithInterest())}</p>
+                        <p className="text-xs text-muted-foreground mt-1">Includes simple interest until EMI starts</p>
+                      </div>
+                    )}
                   </div>
 
                   {/* Results Section */}
