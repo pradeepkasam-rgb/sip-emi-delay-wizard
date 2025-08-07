@@ -45,9 +45,10 @@ const SipEmiCalculator = () => {
 
   const performCalculation = () => {
     const monthlyReturnRate = sipReturn / (12 * 100);
-    const totalMonths = sipTenure * 12;
+    const sipTotalMonths = sipTenure * 12;
     const emiMonthly = calculateEMI(loanAmount, emiRate, emiTenure);
     const emiEndMonth = emiStartMonth + (emiTenure * 12) - 1;
+    const totalMonths = Math.max(sipTotalMonths, emiEndMonth);
     
     let currentCorpus = 0;
     let totalSWPWithdrawn = 0;
@@ -67,9 +68,13 @@ const SipEmiCalculator = () => {
         currentSipAmount = currentSipAmount * (1 + topupPercentage / 100);
       }
       
-      // Add monthly SIP
-      currentCorpus += currentSipAmount;
-      totalSipInvestment += currentSipAmount;
+      // Add monthly SIP only during SIP period
+      let sipInvestmentThisMonth = 0;
+      if (month <= sipTotalMonths) {
+        currentCorpus += currentSipAmount;
+        totalSipInvestment += currentSipAmount;
+        sipInvestmentThisMonth = currentSipAmount;
+      }
       
       const corpusBeforeSWP = currentCorpus;
       let swpWithdrawal = 0;
@@ -84,7 +89,7 @@ const SipEmiCalculator = () => {
       monthlyData.push({
         month: monthInYear,
         year,
-        sipInvestment: currentSipAmount,
+        sipInvestment: sipInvestmentThisMonth,
         corpusBeforeSWP,
         swpWithdrawal,
         netCorpus: currentCorpus
