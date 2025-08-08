@@ -12,7 +12,7 @@ if %errorlevel% neq 0 (
 
 echo.
 echo ⚡ Building Electron application...
-call npx electron-builder --config electron-builder.config.js
+call npx electron-builder --config electron-builder.config.cjs
 if %errorlevel% neq 0 (
     echo ❌ Electron build failed!
     pause

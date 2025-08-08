@@ -18,7 +18,7 @@ try {
 
   // Step 3: Build Electron app
   console.log('⚡ Building Electron application...');
-  execSync('npx electron-builder --config electron-builder.config.js', { stdio: 'inherit' });
+  execSync('npx electron-builder --config electron-builder.config.cjs', { stdio: 'inherit' });
 
   // Step 4: Restore original package.json
   packageJson.main = originalMain;
