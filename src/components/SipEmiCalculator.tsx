@@ -9,15 +9,16 @@
  * - Comprehensive month-wise breakdown
  * - Loan installment functionality with simple interest calculation
  * 
- * V2.0 Baseline Defaults:
+ * V2.0 Baseline Defaults (Formalized Current Parameters):
  * - Monthly SIP: ₹5,000
  * - Investment Period: 10 years
  * - Expected Return: 12% p.a.
  * - Annual Top-up: 10% (in April)
- * - Loan Type: 3 Installments
+ * - Loan Type: 3 Installments (Default)
  * - Installment 1: ₹2,00,000 (Month 12)
- * - Installment 2: ₹2,00,000 (Month 18)
+ * - Installment 2: ₹2,00,000 (Month 18) 
  * - Installment 3: ₹1,00,000 (Month 24)
+ * - Single Loan Amount: ₹5,00,000 (Alternative)
  * - Interest Rate: 8.5% p.a.
  * - Loan Tenure: 6 years
  * - EMI Start Month: 25
