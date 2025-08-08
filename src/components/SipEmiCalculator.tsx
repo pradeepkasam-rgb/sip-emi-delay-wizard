@@ -1,5 +1,5 @@
 /**
- * SIP + SWP EMI Calculator V1.0
+ * SIP + SWP EMI Calculator V2.0
  * 
  * Features:
  * - SIP with annual top-up functionality
@@ -7,13 +7,17 @@
  * - User-selectable EMI start month
  * - Interactive sliders for percentage inputs
  * - Comprehensive month-wise breakdown
+ * - Loan installment functionality with simple interest calculation
  * 
- * V1.0 Baseline Defaults:
+ * V2.0 Baseline Defaults:
  * - Monthly SIP: ₹5,000
  * - Investment Period: 10 years
  * - Expected Return: 12% p.a.
  * - Annual Top-up: 10% (in April)
- * - Loan Amount: ₹5,00,000
+ * - Loan Type: 3 Installments
+ * - Installment 1: ₹2,00,000 (Month 12)
+ * - Installment 2: ₹2,00,000 (Month 18)
+ * - Installment 3: ₹1,00,000 (Month 24)
  * - Interest Rate: 8.5% p.a.
  * - Loan Tenure: 6 years
  * - EMI Start Month: 25
@@ -53,7 +57,7 @@ const SipEmiCalculator = () => {
   const [sipReturn, setSipReturn] = useState<number>(12);
   const [topupPercentage, setTopupPercentage] = useState<number>(10);
   const [topupMonth, setTopupMonth] = useState<number>(4); // April (1-based)
-  const [loanType, setLoanType] = useState<'single' | 'installment'>('single');
+  const [loanType, setLoanType] = useState<'single' | 'installment'>('installment');
   const [loanAmount, setLoanAmount] = useState<number>(500000);
   const [installment1Amount, setInstallment1Amount] = useState<number>(200000);
   const [installment1Month, setInstallment1Month] = useState<number>(12);
